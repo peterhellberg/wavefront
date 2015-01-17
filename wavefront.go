@@ -72,7 +72,7 @@ func Read(filename string) (map[string]*Object, error) {
 			if len(fields) != 2 {
 				return nil, fail("unsupported materials library line")
 			}
-			_, err := readMaterials(filepath.Join(filepath.Dir(filename), fields[1]))
+			materials, err = readMaterials(filepath.Join(filepath.Dir(filename), fields[1]))
 			if err != nil {
 				return nil, err
 			}
