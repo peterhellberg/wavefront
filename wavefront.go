@@ -9,17 +9,20 @@ import (
 	"strings"
 )
 
+// Object contains a name and a list of groups
 type Object struct {
 	Name   string
 	Groups []*Group
 }
 
+// Group contains vertexes, normals and the material
 type Group struct {
 	Vertexes []float32
 	Normals  []float32
 	Material *Material
 }
 
+// Material represents a material
 type Material struct {
 	Name      string
 	Ambient   []float32
@@ -28,6 +31,7 @@ type Material struct {
 	Shininess float32
 }
 
+// Read opens a wavefront file and parses it into a map of objects
 func Read(filename string) (map[string]*Object, error) {
 	file, err := os.Open(filename)
 	if err != nil {
@@ -35,12 +39,14 @@ func Read(filename string) (map[string]*Object, error) {
 	}
 	defer file.Close()
 
-	var materials map[string]*Material
-	var objects = make(map[string]*Object)
-	var object *Object
-	var group *Group
-	var vertex []float32
-	var normal []float32
+	var (
+		materials map[string]*Material
+		objects   = make(map[string]*Object)
+		object    *Object
+		group     *Group
+		vertex    []float32
+		normal    []float32
+	)
 
 	lno := 0
 	line := ""
@@ -66,7 +72,7 @@ func Read(filename string) (map[string]*Object, error) {
 			if len(fields) != 2 {
 				return nil, fail("unsupported materials library line")
 			}
-			materials, err = readMaterials(filepath.Join(filepath.Dir(filename), fields[1]))
+			_, err := readMaterials(filepath.Join(filepath.Dir(filename), fields[1]))
 			if err != nil {
 				return nil, err
 			}
@@ -160,8 +166,10 @@ func readMaterials(filename string) (map[string]*Material, error) {
 	}
 	defer file.Close()
 
-	var materials = make(map[string]*Material)
-	var material *Material
+	var (
+		materials = make(map[string]*Material)
+		material  *Material
+	)
 
 	lno := 0
 	line := ""
@@ -187,11 +195,13 @@ func readMaterials(filename string) (map[string]*Material, error) {
 			if len(fields) != 2 {
 				return nil, fail("unsupported material definition")
 			}
+
 			material = &Material{Name: fields[1]}
 			material.Ambient = []float32{0.2, 0.2, 0.2, 1.0}
 			material.Diffuse = []float32{0.8, 0.8, 0.8, 1.0}
 			material.Specular = []float32{0.0, 0.0, 0.0, 1.0}
 			materials[material.Name] = material
+
 			continue
 		}
 
@@ -255,6 +265,7 @@ func readMaterials(filename string) (map[string]*Material, error) {
 			material.Specular[3] = float32(f)
 		}
 	}
+
 	if err := scanner.Err(); err != nil {
 		return nil, err
 	}
