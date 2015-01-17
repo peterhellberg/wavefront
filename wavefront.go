@@ -59,7 +59,8 @@ func Read(filename string) (map[string]*Object, error) {
 	for scanner.Scan() {
 		lno++
 		line = scanner.Text()
-		if strings.HasPrefix(line, "#") {
+
+		if strings.HasPrefix(line, "#") || strings.HasPrefix(line, " ") {
 			continue
 		}
 
@@ -68,7 +69,8 @@ func Read(filename string) (map[string]*Object, error) {
 			continue
 		}
 
-		if fields[0] == "mtllib" {
+		switch fields[0] {
+		case "mtllib":
 			if len(fields) != 2 {
 				return nil, fail("unsupported materials library line")
 			}
@@ -77,9 +79,7 @@ func Read(filename string) (map[string]*Object, error) {
 				return nil, err
 			}
 			continue
-		}
-
-		if fields[0] == "o" {
+		case "o":
 			if len(fields) != 2 {
 				return nil, fail("unsupported object line")
 			}
@@ -93,13 +93,11 @@ func Read(filename string) (map[string]*Object, error) {
 			return nil, fail("found data before object")
 		}
 
-		if fields[0] == "usemtl" {
-			group = &Group{}
-			object.Groups = append(object.Groups, group)
-		}
-
 		switch fields[0] {
 		case "usemtl":
+			group = &Group{}
+			object.Groups = append(object.Groups, group)
+
 			if len(fields) != 2 {
 				return nil, fail("unsupported material usage line")
 			}
@@ -153,9 +151,11 @@ func Read(filename string) (map[string]*Object, error) {
 			}
 		}
 	}
+
 	if err := scanner.Err(); err != nil {
 		return nil, err
 	}
+
 	return objects, nil
 }
 
@@ -274,11 +274,15 @@ func readMaterials(filename string) (map[string]*Material, error) {
 	// practice, so hack colors to look closer to what we see there.
 	// TODO This needs more real world checking.
 	for _, material := range materials {
-		if material.Ambient[0] == 0 && material.Ambient[1] == 0 && material.Ambient[2] == 0 && material.Ambient[3] == 1 {
+		if material.Ambient[0] == 0 &&
+			material.Ambient[1] == 0 &&
+			material.Ambient[2] == 0 &&
+			material.Ambient[3] == 1 {
 			material.Ambient[0] = material.Diffuse[0] * 0.7
 			material.Ambient[1] = material.Diffuse[1] * 0.7
 			material.Ambient[2] = material.Diffuse[2] * 0.7
 		}
+
 		for i := 0; i < 3; i++ {
 			material.Diffuse[i] *= 1.3
 			if material.Diffuse[i] > 1 {
