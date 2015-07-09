@@ -5,6 +5,10 @@ A go getable version of the wavefront (OBJ/MTL) parser used by the
 [go-qml/qml](https://github.com/go-qml/qml)
 [gopher](https://github.com/go-qml/qml/tree/v1/examples/gopher) example.
 
+[![Build Status](https://travis-ci.org/peterhellberg/wavefront.svg?branch=master)](https://travis-ci.org/peterhellberg/wavefront)
+[![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/peterhellberg/wavefront)
+[![License MIT](https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat)](https://github.com/peterhellberg/wavefront#license-mit)
+
 ## License (MIT)
 
 > Copyright (C) 2015 Peter Hellberg
